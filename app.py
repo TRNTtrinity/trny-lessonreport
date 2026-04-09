@@ -919,6 +919,7 @@ if page == "📊 대시보드":
     st.markdown("---")
 
     # ---- KPI 요약 (전체 평균 포함) ----
+    targets = config.get("targets", {})
     c1, c2, c3, c4, c5, c6 = st.columns(6)
     with c1:
         metric_card("총 수업 건수", fmt_num(df["총수업수"].sum()),
@@ -928,9 +929,9 @@ if page == "📊 대시보드":
                     sub=f"평균 {df['개인레슨수'].mean():.0f}건/인", color="green")
     with c3:
         avg_personal = df["개인출석률"].dropna().mean()
-        t_pa = targets.get("개인출석율_목표", 0.85)
+        t_pa = targets.get("목표레슨_배수", 2.0)
         pa_color = "green" if avg_personal and avg_personal >= t_pa else "orange" if avg_personal and avg_personal >= t_pa * 0.8 else "red"
-        metric_card("개인출석률", fmt_rate(avg_personal), sub=f"목표 {t_pa:.2f}", color=pa_color)
+        metric_card("개인출석률", fmt_rate(avg_personal), sub=f"목표 {t_pa:.1f}", color=pa_color)
     with c4:
         avg_group = df["그룹출석율"].dropna().mean()
         t_ga = targets.get("그룹출석율_목표", 5.0)
