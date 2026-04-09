@@ -1,0 +1,8 @@
+.DS_Store
+.env
+__pycache__/
+*.pyc
+.claude/
+notion_cache.json
+config.json
+data/
