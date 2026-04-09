@@ -23,15 +23,20 @@ if "authenticated" not in st.session_state:
     st.session_state["authenticated"] = False
 
 if not st.session_state["authenticated"]:
-    st.markdown("## 🏋️ TRNT 필라테스 레슨리포트")
-    pw = st.text_input("비밀번호를 입력하세요", type="password", key="login_pw")
-    if st.button("로그인", type="primary"):
-        cfg = json.load(open(os.path.join(os.path.dirname(__file__), "config.json"), "r"))
-        if pw == cfg.get("dashboard_password", "trnt1234"):
-            st.session_state["authenticated"] = True
-            st.rerun()
-        else:
-            st.error("비밀번호가 올바르지 않습니다.")
+    col_logo = st.columns([1, 2, 1])
+    with col_logo[1]:
+        st.image("logo2.png", use_container_width=True)
+        st.markdown("<h4 style='text-align:center;'>레슨리포트 대시보드</h4>", unsafe_allow_html=True)
+    col_pw = st.columns([1, 2, 1])
+    with col_pw[1]:
+        pw = st.text_input("비밀번호를 입력하세요", type="password", key="login_pw")
+        if st.button("로그인", type="primary", use_container_width=True):
+            cfg = load_config()
+            if pw == cfg.get("dashboard_password", "trnt1234"):
+                st.session_state["authenticated"] = True
+                st.rerun()
+            else:
+                st.error("비밀번호가 올바르지 않습니다.")
     st.stop()
 
 st.markdown("""
@@ -318,7 +323,7 @@ def load_data():
 
 # Sidebar
 with st.sidebar:
-    st.markdown("## 🏋️ TRNT 필라테스")
+    st.image("logo.png", width=80)
     st.markdown("### 레슨리포트 대시보드")
     st.markdown("---")
     page = st.radio("메뉴", ["📊 대시보드", "👤 강사별 리포트", "📈 월별 비교", "👥 팀별 비교", "⚙️ 설정"],
@@ -954,7 +959,8 @@ if page == "📊 대시보드":
     if len(months) > 1:
         st.markdown("### 📈 스튜디오 월별 추이")
         trend_data = []
-        for m in months:
+        recent_months = months[-3:] if len(months) > 3 else months
+        for m in recent_months:
             mdf = reports[m]
             trend_data.append({
                 "월": m,

@@ -1,0 +1,184 @@
+{
+  "studio_name": "TRNT 필라테스",
+  "notion_api_token": "",
+  "notion_db_id": "",
+  "weeks_per_month": 4.345,
+  "targets": {
+    "개인출석율_목표": 0.85,
+    "그룹출석율_목표": 5.0,
+    "재등록률_목표": 0.9,
+    "체험등록율_목표": 0.9,
+    "최소레슨_배수": 1.0,
+    "목표레슨_배수": 2.0000000000000004,
+    "최대레슨_배수": 3.0
+  },
+  "teams": {
+    "다감팀": [
+      "김홍선",
+      "조수진",
+      "신효선",
+      "현미란",
+      "강다감"
+    ],
+    "은슬팀": [
+      "이수민",
+      "정유정",
+      "박은슬"
+    ],
+    "진경팀": [
+      "김유하",
+      "김어진",
+      "곽진경"
+    ],
+    "진실팀": [
+      "이송연",
+      "허다연",
+      "조윤정",
+      "고진실"
+    ],
+    "슬기팀": [
+      "김희원",
+      "최지은",
+      "장연우"
+    ]
+  },
+  "instructors": [
+    "강다감",
+    "고진실",
+    "곽진경",
+    "김어진",
+    "김유하",
+    "김홍선",
+    "김희원",
+    "박은슬",
+    "신효선",
+    "이송연",
+    "이수민",
+    "이윤희",
+    "장연우",
+    "정유정",
+    "조수진",
+    "조윤정",
+    "최지은",
+    "한진주",
+    "허다연",
+    "현미란"
+  ],
+  "product_list_path": "product_list.xlsx",
+  "data_files": {
+    "2025년 12월": [
+      "data/2025년 12월_1.xlsx",
+      "data/2025년 12월_2.xlsx",
+      "data/2025년 12월_3.xlsx"
+    ],
+    "2026년 1월": [
+      "data/2026년 1월_1.xlsx",
+      "data/2026년 1월_2.xlsx",
+      "data/2026년 1월_3.xlsx"
+    ],
+    "2026년 2월": [
+      "data/2026년 2월_1.xlsx",
+      "data/2026년 2월_2.xlsx",
+      "data/2026년 2월_3.xlsx"
+    ],
+    "2026년 3월": [
+      "data/2026년 3월_1.xlsx",
+      "data/2026년 3월_2.xlsx",
+      "data/2026년 3월_3.xlsx"
+    ]
+  },
+  "smtp": {
+    "server": "",
+    "port": "",
+    "sender_email": "",
+    "sender_password": "",
+    "sender_name": ""
+  },
+  "notion_staff_db_id": "",
+  "instructor_emails": {
+    "조윤정": ""
+  },
+  "staff": {
+    "조윤정": {
+      "email": "seona8812@gmail.com",
+      "status": "재직"
+    },
+    "강다감": {
+      "email": "hyera0111@gmail.com",
+      "status": "재직"
+    },
+    "고진실": {
+      "email": "kojs1102@gmail.com",
+      "status": "재직"
+    },
+    "곽진경": {
+      "email": "tlcyoo98@gmail.com",
+      "status": "재직"
+    },
+    "김어진": {
+      "email": "neoerjin@gmail.com",
+      "status": "재직"
+    },
+    "김유하": {
+      "email": "skekdkfma@gmail.com",
+      "status": "재직"
+    },
+    "김홍선": {
+      "email": "hsun0315@gmail.com",
+      "status": "재직"
+    },
+    "김희원": {
+      "email": "kimhw0243@gmail.com",
+      "status": "재직"
+    },
+    "박은슬": {
+      "email": "pes891006@gmail.com",
+      "status": "재직"
+    },
+    "신효선": {
+      "email": "hsnew0919@gmail.com",
+      "status": "재직"
+    },
+    "이송연": {
+      "email": "songyeon9211@gmail.com",
+      "status": "재직"
+    },
+    "이수민": {
+      "email": "dltnals1799@gmail.com",
+      "status": "재직"
+    },
+    "이윤희": {
+      "email": "leeyunheehee@gmail.com",
+      "status": "퇴사"
+    },
+    "장연우": {
+      "email": "lastyearwoo@gmail.com",
+      "status": "재직"
+    },
+    "정유정": {
+      "email": "yujung1120@gmail.com",
+      "status": "재직"
+    },
+    "조수진": {
+      "email": "leebbone@gmail.com",
+      "status": "재직"
+    },
+    "최지은": {
+      "email": "parfum051@hotmail.com",
+      "status": "재직"
+    },
+    "한진주": {
+      "email": "wlswnv0708@naver.com",
+      "status": "휴직"
+    },
+    "허다연": {
+      "email": "dayeonhou1106@gmail.com",
+      "status": "재직"
+    },
+    "현미란": {
+      "email": "guslan947@gmail.com",
+      "status": "재직"
+    }
+  },
+  "dashboard_password": "trnt1234"
+}

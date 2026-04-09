@@ -6,9 +6,28 @@ from pathlib import Path
 
 CONFIG_PATH = Path(__file__).parent / "config.json"
 
+def _apply_secrets(config):
+    """Streamlit secrets.toml 값을 config에 덮어쓰기 (비어있는 필드만)"""
+    try:
+        import streamlit as st
+        secrets = st.secrets
+        for key in ("notion_api_token", "notion_db_id", "notion_staff_db_id", "dashboard_password"):
+            if not config.get(key) and key in secrets:
+                config[key] = secrets[key]
+        if "smtp" in secrets:
+            cfg_smtp = config.get("smtp", {})
+            for k in ("server", "port", "sender_email", "sender_password", "sender_name"):
+                if not cfg_smtp.get(k) and k in secrets["smtp"]:
+                    cfg_smtp[k] = secrets["smtp"][k]
+            config["smtp"] = cfg_smtp
+    except Exception:
+        pass
+    return config
+
 def load_config():
     with open(CONFIG_PATH, "r") as f:
-        return json.load(f)
+        config = json.load(f)
+    return _apply_secrets(config)
 
 def save_config(config):
     with open(CONFIG_PATH, "w") as f:

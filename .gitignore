@@ -4,5 +4,4 @@ __pycache__/
 *.pyc
 .claude/
 notion_cache.json
-config.json
-data/
+.streamlit/secrets.toml
