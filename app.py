@@ -1857,8 +1857,8 @@ elif page == "⚙️ 설정":
     # 설정 페이지에서는 캐시 안 탄 config 직접 로드
     config = load_config()
 
-    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(
-        ["👥 팀구성", "🎯 목표설정", "📁 데이터관리", "👩‍🏫 직원관리", "📄 상품리스트", "🔧 기타"]
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(
+        ["👥 팀구성", "🎯 목표설정", "📁 데이터관리", "👩‍🏫 직원관리", "📄 상품리스트", "📋 노션 데이터", "🔧 기타"]
     )
 
     # ── 탭1: 팀구성 ──
@@ -2315,8 +2315,130 @@ elif page == "⚙️ 설정":
             save_config(config)
             st.success("상품리스트 업데이트 완료!")
 
-    # ── 탭6: 기타 (노션 연동) ──
+    # ── 탭6: 노션 데이터 확인/수정 ──
     with tab6:
+        st.markdown("### 📋 노션 데이터 확인")
+        st.caption("노션에서 가져온 강사별 데이터를 확인하고, 오류가 있으면 직접 수정할 수 있습니다.")
+
+        # 노션 캐시 로드
+        notion_path = os.path.join(os.path.dirname(__file__), "notion_cache.json")
+        if os.path.exists(notion_path):
+            with open(notion_path, "r") as f:
+                notion_raw = json.load(f)
+
+            # 월 선택
+            notion_months = sorted([k for k in notion_raw.keys() if "년" in k], reverse=True)
+            if not notion_months:
+                notion_months = sorted(notion_raw.keys(), reverse=True)
+
+            sel_notion_month = st.selectbox("월 선택", notion_months, key="notion_month_sel")
+            notion_month_data = notion_raw.get(sel_notion_month, {})
+
+            if notion_month_data:
+                # 테이블로 표시
+                notion_rows = []
+                for inst_name, vals in sorted(notion_month_data.items()):
+                    notion_rows.append({
+                        "강사": inst_name,
+                        "전체고객수": vals.get("전체고객수"),
+                        "홀딩고객수": vals.get("홀딩고객수"),
+                        "재등예정수": vals.get("재등예정수"),
+                        "재등완료수": vals.get("재등완료수"),
+                        "체험수업수": vals.get("체험수업수"),
+                        "체험등록수": vals.get("체험등록수"),
+                        "마감일": vals.get("마감일", ""),
+                    })
+                notion_df = pd.DataFrame(notion_rows)
+
+                # 문제 감지
+                warnings = []
+                # 엑셀 강사 목록과 비교
+                excel_instructors = set()
+                for m in reports:
+                    excel_instructors.update(reports[m]["강사"].unique())
+                notion_instructors = set(notion_month_data.keys())
+                # 엑셀에는 있는데 노션에 없는 강사
+                missing_in_notion = excel_instructors - notion_instructors - _excluded
+                if missing_in_notion:
+                    warnings.append(f"⚠️ 노션 미입력 강사: **{', '.join(sorted(missing_in_notion))}**")
+                # 노션에는 있는데 엑셀에 없는 강사 (오타 가능성)
+                extra_in_notion = notion_instructors - excel_instructors
+                if extra_in_notion:
+                    warnings.append(f"⚠️ 엑셀에 없는 강사 (오타 가능성): **{', '.join(sorted(extra_in_notion))}**")
+
+                for w in warnings:
+                    st.warning(w)
+
+                st.markdown("---")
+                st.markdown("##### 데이터 편집")
+                st.caption("값을 수정한 뒤 '저장' 버튼을 눌러주세요.")
+
+                edit_cols = ["전체고객수", "홀딩고객수", "재등예정수", "재등완료수", "체험수업수", "체험등록수"]
+
+                # 헤더
+                hcols = st.columns([2] + [1.2]*6 + [1.5] + [0.8])
+                headers = ["강사"] + edit_cols + ["마감일", ""]
+                for hc, ht in zip(hcols, headers):
+                    with hc:
+                        st.markdown(f"**{ht}**")
+
+                edited_data = {}
+                for nidx, (inst_name, vals) in enumerate(sorted(notion_month_data.items())):
+                    ncols = st.columns([2] + [1.2]*6 + [1.5] + [0.8])
+                    with ncols[0]:
+                        new_name = st.text_input("강사", value=inst_name, key=f"notion_name_{nidx}", label_visibility="collapsed")
+                    edit_vals = {}
+                    for cidx, col_name in enumerate(edit_cols):
+                        with ncols[cidx + 1]:
+                            old_val = vals.get(col_name)
+                            new_val = st.number_input(col_name, value=int(old_val) if old_val is not None else 0,
+                                                       min_value=0, step=1, key=f"notion_{col_name}_{nidx}",
+                                                       label_visibility="collapsed")
+                            edit_vals[col_name] = new_val
+                    with ncols[7]:
+                        st.text(vals.get("마감일", "-") or "-")
+                    with ncols[8]:
+                        if st.button("🗑️", key=f"notion_del_{nidx}"):
+                            del notion_raw[sel_notion_month][inst_name]
+                            # 단축키도 삭제
+                            short_key = sel_notion_month.split("년")[-1].strip() if "년" in sel_notion_month else None
+                            if short_key and short_key in notion_raw and inst_name in notion_raw[short_key]:
+                                del notion_raw[short_key][inst_name]
+                            with open(notion_path, "w") as f:
+                                json.dump(notion_raw, f, ensure_ascii=False, indent=2)
+                            st.cache_data.clear()
+                            st.rerun()
+
+                    edited_data[new_name] = {**edit_vals, "마감일": vals.get("마감일")}
+
+                def do_save_notion():
+                    with open(notion_path, "r") as f:
+                        raw = json.load(f)
+                    # 기존 데이터 삭제 후 새 데이터 저장
+                    raw[sel_notion_month] = {}
+                    for inst, vals in edited_data.items():
+                        raw[sel_notion_month][inst] = vals
+                    # 단축키도 동기화
+                    short_key = sel_notion_month.split("년")[-1].strip() if "년" in sel_notion_month else None
+                    if short_key and short_key in raw:
+                        raw[short_key] = {}
+                        for inst, vals in edited_data.items():
+                            raw[short_key][inst] = vals
+                    with open(notion_path, "w") as f:
+                        json.dump(raw, f, ensure_ascii=False, indent=2)
+                    st.cache_data.clear()
+
+                st.markdown("---")
+                if st.button("💾 노션 데이터 저장", type="primary", on_click=do_save_notion):
+                    st.success("노션 데이터가 저장되었습니다!")
+
+            else:
+                st.info(f"{sel_notion_month}에 해당하는 노션 데이터가 없습니다.")
+        else:
+            st.warning("노션 캐시 파일이 없습니다. '노션 데이터 업데이트' 버튼을 먼저 눌러주세요.")
+
+    # ── 탭7: 기타 (노션 연동) ──
+    with tab7:
         st.markdown("### 🔗 노션 연동")
         new_token = st.text_input("노션 API 토큰", value=config.get("notion_api_token", ""), type="password")
         new_db_id = st.text_input("레슨리포트 DB ID", value=config.get("notion_db_id", ""))
