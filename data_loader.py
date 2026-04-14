@@ -240,7 +240,7 @@ def aggregate_instructor(df_month, notion_month_data, config):
         group = done[done["TRNT대구분"] == "그룹"]
         group_attend = len(group)
         group_members = group["회원명"].nunique() if len(group) > 0 else 0
-        group_sessions = group.groupby("수업일자").ngroups if len(group) > 0 else 0
+        group_sessions = group["수업일자"].nunique() if len(group) > 0 else 0
         # 그룹수업수 = 정산승인된 전체 그룹 레코드 수 (출석+결석 모두 포함)
         group_all = idf[idf["TRNT대구분"] == "그룹"]
         group_total_records = len(group_all[group_all["수업완료"]])
@@ -251,7 +251,9 @@ def aggregate_instructor(df_month, notion_month_data, config):
         academy_deep = len(academy[academy["TRNT중구분"] == "딥코칭"])
         academy_mock = len(academy[academy["TRNT중구분"] == "모의테스트"])
         academy_trial = len(academy[academy["TRNT중구분"] == "체험"])
-        academy_group = len(academy[academy["TRNT중구분"] == "그룹"])
+        # 아카데미 그룹은 '수업수' 기준 (수업일자+시간별 유니크) — 출석자 수 아님
+        academy_group_df = academy[academy["TRNT중구분"] == "그룹"]
+        academy_group = academy_group_df["수업일자"].nunique() if len(academy_group_df) > 0 else 0
 
         # 노션 데이터
         n = notion_month_data.get(instructor, {})
