@@ -313,7 +313,7 @@ def aggregate_instructor(df_month, notion_month_data, config):
             "아카데미_모의테스트": academy_mock,
             "아카데미_체험": academy_trial,
             "아카데미_그룹": academy_group,
-            "총수업수": personal_count + ot_count + duet_sessions + group_sessions,
+            "총수업수": personal_count + ot_count + group_sessions,
         })
     return pd.DataFrame(results)
 
