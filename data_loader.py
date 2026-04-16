@@ -235,6 +235,7 @@ def aggregate_instructor(df_month, notion_month_data, config):
         duet = done[done["TRNT대구분"] == "듀엣"]
         duet_lesson_count = len(duet)
         duet_members = duet["회원명"].nunique() if len(duet) > 0 else 0
+        duet_sessions = duet["수업일자"].nunique() if len(duet) > 0 else 0
 
         # 그룹
         group = done[done["TRNT대구분"] == "그룹"]
@@ -297,7 +298,8 @@ def aggregate_instructor(df_month, notion_month_data, config):
             "체험등록수": trial_reg,
             "체험승률": trial_reg_rate,
             "듀엣회원수": duet_members,
-            "듀엣레슨수": duet_lesson_count,
+            "듀엣레슨수": duet_sessions,
+            "듀엣출석수": duet_lesson_count,
             "듀엣출석률": duet_attend_rate,
             "그룹회원수": group_members,
             "그룹수업수": group_sessions,
@@ -311,7 +313,7 @@ def aggregate_instructor(df_month, notion_month_data, config):
             "아카데미_모의테스트": academy_mock,
             "아카데미_체험": academy_trial,
             "아카데미_그룹": academy_group,
-            "총수업수": len(done) - academy_count,
+            "총수업수": personal_count + ot_count + duet_sessions + group_sessions,
         })
     return pd.DataFrame(results)
 
